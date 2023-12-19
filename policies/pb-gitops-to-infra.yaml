@@ -1,0 +1,13 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: pb-gitops-to-infra
+  namespace: acm-policies
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: pl-create-test-cm-placement
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: pl-gitops-to-infra

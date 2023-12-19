@@ -1,0 +1,35 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: pl-gitops-to-infra
+  namespace: acm-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: config-policy-update-gitops-service
+      spec:
+        namespaceSelector:
+          exclude: []
+          include:
+          - openshift-gitops
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: pipelines.openshift.io/v1alpha1
+            kind: GitopsService
+            metadata:
+              name: cluster
+            spec:
+              runOnInfra: true
+              tolerations:
+              - effect: NoSchedule
+                key: infra
+                value: reserved
+              - effect: NoExecute
+                key: infra
+                value: reserved
+  remediationAction: inform

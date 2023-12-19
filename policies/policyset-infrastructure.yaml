@@ -1,0 +1,11 @@
+apiVersion: policy.open-cluster-management.io/v1beta1
+  kind: PolicySet
+  metadata:
+    name: policyset-infrastructure
+    namespace: acm-policies
+  spec:
+    description: ""
+    policies:
+    - openshift-gitops-installed
+    - pl-gitops-to-infra
+    - pl-create-infra
