@@ -1,0 +1,39 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: pl-move-ingress
+spec:
+  remediationAction: inform
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: move-ingress
+        spec:
+          remediationAction: inform
+          severity: low
+          namespaceSelector:
+            exclude: ["kube-*"]
+            include: ["custom-policies"]
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: operator.openshift.io/v1
+                kind: IngressController
+                metadata:
+                  name: default
+                  namespace: openshift-ingress-operator
+                spec:
+                  nodePlacement:
+                    nodeSelector: 
+                      matchLabels:
+                        node-role.kubernetes.io/infra: ""
+                    tolerations:
+                    - effect: NoSchedule
+                      key: node-role.kubernetes.io/infra
+                      value: reserved
+                    - effect: NoExecute
+                      key: node-role.kubernetes.io/infra
+                      value: reserved

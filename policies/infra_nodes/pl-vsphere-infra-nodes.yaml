@@ -1,12 +1,8 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  creationTimestamp: "2023-12-18T22:26:05Z"
-  generation: 17
-  name: pl-create-infra-2
+  name: pl-create-infra
   namespace: acm-policies
-  resourceVersion: "1885725"
-  uid: 1dbcccb1-86b2-4f7e-8ba4-26ef904ea75e
 spec:
   disabled: false
   policy-templates:
@@ -14,7 +10,7 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: policy-create-infrastructure-nodes-2
+        name: policy-create-infrastructure-nodes
       spec:
         namespaceSelector:
           exclude: []
@@ -22,6 +18,7 @@ spec:
           - openshift-machine-api
         object-templates-raw: |
           {{- $infrastructure_id := (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").status.infrastructureName }}
+          {{- $worker_ms := (index (lookup "machine.openshift.io/v1beta1" "MachineSet" "openshift-machine-api" "").items 0) }}
           - complianceType: musthave
             objectDefinition:
               apiVersion: machine.openshift.io/v1beta1
@@ -64,7 +61,7 @@ spec:
                           creationTimestamp: null
                         network:
                           devices:
-                          - networkName: <FILL_IN>
+                          - networkName: {{ (index ($worker_ms.spec.template.spec.providerSpec.value.network).devices 0).networkName }}
                         numCPUs: 8
                         numCoresPerSocket: 4
                         snapshot: ""
@@ -72,10 +69,12 @@ spec:
                         userDataSecret:
                           name: worker-user-data
                         workspace:
-                          datacenter: <FILL_IN>
-                          datastore: <FILL_IN>
-                          folder: <FILL_IN>
-                          resourcePool: <FILL_IN>
-                          server: <FILL_IN>
+                          datacenter: '{{ $worker_ms.spec.template.spec.providerSpec.value.workspace.datacenter }}'
+                          datastore:  '{{ $worker_ms.spec.template.spec.providerSpec.value.workspace.datastore }}'
+                          {{- if $worker_ms.spec.template.spec.providerSpec.value.workspace.folder }}
+                          folder: '{{ $worker_ms.spec.template.spec.providerSpec.value.workspace.folder }}'
+                          {{- end }}
+                          resourcePool: '{{ $worker_ms.spec.template.spec.providerSpec.value.workspace.resourcePool }}'
+                          server: '{{ $worker_ms.spec.template.spec.providerSpec.value.workspace.server}}'
         severity: medium
   remediationAction: inform
