@@ -1,7 +1,7 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  name: pl-gitops-to-infra
+  name: pl-oauth-configure
   namespace: acm-policies
 spec:
   disabled: false
@@ -10,23 +10,17 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: config-policy-update-gitops-service
+        name: update-oauth-configuration
       spec:
         severity: medium
         object-templates:
         - complianceType: musthave
           objectDefinition:
-            apiVersion: pipelines.openshift.io/v1alpha1
-            kind: GitopsService
+            apiVersion: config.openshift.io/v1
+            kind: OAuth
             metadata:
               name: cluster
             spec:
-              runOnInfra: true
-              tolerations:
-              - effect: NoSchedule
-                key: infra
-                value: reserved
-              - effect: NoExecute
-                key: infra
-                value: reserved
+              tokenConfig:
+                accessTokenMaxAgeSeconds: 604800
   remediationAction: inform

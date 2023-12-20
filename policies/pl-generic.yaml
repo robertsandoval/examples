@@ -1,0 +1,27 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: <PL_POLICY_NAME>
+  namespace: <PL_NAMESPACE>
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: <CP_PL_NAME> 
+      spec:
+        namespaceSelector:
+          exclude: []
+          include: []   <Include namespaces here if you have a namespaced object but not include the namespace field>
+                        <this is to apply a namespace scoped object to multiple namespaces>
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: <API_VERSION>
+            kind: <KIND>
+            metadata:
+              name: <OBJECT_NAME>
+            spec:
+  remediationAction: inform

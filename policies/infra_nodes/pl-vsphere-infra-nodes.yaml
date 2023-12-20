@@ -12,10 +12,6 @@ spec:
       metadata:
         name: policy-create-infrastructure-nodes
       spec:
-        namespaceSelector:
-          exclude: []
-          include:
-          - openshift-machine-api
         object-templates-raw: |
           {{- $infrastructure_id := (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").status.infrastructureName }}
           {{- $worker_ms := (index (lookup "machine.openshift.io/v1beta1" "MachineSet" "openshift-machine-api" "").items 0) }}
@@ -49,6 +45,13 @@ spec:
                     metadata: 
                       labels:
                         node-role.kubernetes.io/infra: ""
+                    taints:
+                      - key: infra
+                        value: reserved
+                        effect: NoSchedule
+                      - key: infra
+                        value: reserved
+                        effect: NoExecute
                     providerSpec:
                       value:
                         apiVersion: machine.openshift.io/v1beta1

@@ -14,9 +14,6 @@ spec:
         spec:
           remediationAction: inform
           severity: low
-          namespaceSelector:
-            exclude: ["kube-*"]
-            include: ["custom-policies"]
           object-templates:
             - complianceType: musthave
               objectDefinition:
@@ -32,8 +29,8 @@ spec:
                         node-role.kubernetes.io/infra: ""
                     tolerations:
                     - effect: NoSchedule
-                      key: node-role.kubernetes.io/infra
+                      key: infra
                       value: reserved
                     - effect: NoExecute
-                      key: node-role.kubernetes.io/infra
+                      key: infra
                       value: reserved
